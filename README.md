@@ -24,7 +24,16 @@ To install XenforoBridge into Laravel 4 simple add the following service provide
 )
 
 ```
-Then publish the config file with 'php artisan config:publish underratedbrilliance/xenforobridge'. This will add the file 'app/config/packages/urb/xenforobridge/config.php'. This is where you will place the needed configurations to use the Xenforo Bridge.
+Then publish the config file with 'php artisan config:publish urb/xenforobridge'. This will add the file 'app/config/packages/urb/xenforobridge/config.php'. This is where you will place the needed configurations to use the Xenforo Bridge.
+
+Within this config file you will need to supply the full directory path to your XenForo installation and the base url path like the example below
+
+```php
+return array(
+		'xenforo_directory_path' => '/var/www/html/public/forums',
+		'xenforo_base_url_path'  => '//example.com/forums/', //Default '/'
+	);
+```
 
 Credits
 -------
