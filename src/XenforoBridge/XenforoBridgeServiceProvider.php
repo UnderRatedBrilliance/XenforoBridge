@@ -32,7 +32,7 @@ class XenforoBridgeServiceProvider extends ServiceProvider {
         public function boot()
         {
             //Initialize package
-            $this->package('gabarba/xenforobridge',null, __DIR__.'/../');
+            $this->package('urb/xenforobridge',null, __DIR__.'/../');
 
             //include our filters
 			include __DIR__.'/../filters.php';      

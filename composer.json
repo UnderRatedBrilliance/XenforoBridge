@@ -1,5 +1,5 @@
 {
-    "name": "underratedbrilliance/xenforobridge",
+    "name": "urb/xenforobridge",
     "description": "Xenforo Bridge - Easy to use extendable bridge to use outside of your XenForo application all containted within a simple to use composer package",
     "keywords": ["laravel", "laravel4", "xenforo", "xenforo forum", "forum"],
     "type": "library",
