@@ -18,7 +18,8 @@ Install the XenforoBridge package with Composer.
 
 To install XenforoBridge into Laravel 4 simple add the following service provider to your 'app/config/app.php' in the 'providers' array:
 
-```'providers' => array(
+```php
+'providers' => array(
 		'XenforoBridge\XenforoBridgeServiceProvider',
 )
 
