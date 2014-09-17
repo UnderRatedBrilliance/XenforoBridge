@@ -1,0 +1,21 @@
+{
+    "name": "gabarba/xenforobridge",
+    "description": "Access Xenforo functions outside of Xenforo in a simple composer compatible package",
+    "keywords": ["laravel", "laravel4", "xenforo", "xenforo forum", "forum"],
+    "type": "library",
+    "authors": [
+        {
+            "name": "George Barba",
+            "email": "george@underratedbrilliance.com"
+        }
+    ],
+    "require": {
+        "php": ">=5.3.0"
+    },
+    "autoload": {
+        "psr-0": {
+            "XenforoBridge": "src/"
+        }
+    },
+    "minimum-stability": "dev"
+}
