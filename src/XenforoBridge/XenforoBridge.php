@@ -9,6 +9,7 @@ use XenforoBridge\User\User;
 use XenForo_Autoloader;
 use XenForo_Application;
 use XenForo_Session;
+
 class XenforoBridge
 {
 	protected $xenforoDir;

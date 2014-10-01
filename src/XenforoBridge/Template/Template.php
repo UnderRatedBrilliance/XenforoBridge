@@ -56,9 +56,10 @@ class Template implements TemplateInterface
 		$application = new XenForo_Application();
 		$dependencies = new XenForo_Dependencies_Public();
 		$request = new Zend_Controller_Request_Http();
-		ad($request);
+
 		//Set Xenforo Base Path
-		$request = $request->setBasePath($this->xenBasePath);
+        $basePath = parse_url($this->xenBasePath,PHP_URL_PATH);
+        $request = $request->setBasePath($basePath);
 		
 		$application->set('requestPaths',$application::getRequestPaths($request));
 
