@@ -16,7 +16,6 @@ class Template implements TemplateInterface
 		{
 			throw new Exception('Require string passed '.gettype($xenBasePath));
 		}
-		ad($xenBasePath);
 		$this->xenBasePath = $xenBasePath;
 	}
 
