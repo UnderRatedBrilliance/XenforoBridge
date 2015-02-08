@@ -1,5 +1,9 @@
 <?php namespace XenforoBridge\Middleware;
 
+use Closure;
+use Config;
+use Session;
+use Redirect;
 use XenforoBridge\XenforoBridge;
 
 class XenAuthMiddleware {
@@ -12,8 +16,8 @@ class XenAuthMiddleware {
 
     /**
      * Construct Middleware Class
-     * 
-     * @param \XenforoBridge\XenforoBridge $xenforo 
+     *
+     * @param \XenforoBridge\XenforoBridge $xenforo
      */
     public function __construct(XenforoBridge $xenforo)
     {
@@ -29,14 +33,14 @@ class XenAuthMiddleware {
      */
     public function handle($request, Closure $next)
     {
-        $xenBaseUrl = Config::get('xenforobridge::xenforo_base_url_path');
+        $xenBaseUrl = config('xenforobridge.xenforo_base_url_path');
 
         if(!$this->xenforo->isLoggedIn() AND ! $this->xenforo->isBanned())
         {
-            Session::put('loginRedirect', Request::url());
+            Session::put('loginRedirect', $request->url());
             return Redirect::to($xenBaseUrl.'login');
         }
-        
+
         return $next($request);
     }
 

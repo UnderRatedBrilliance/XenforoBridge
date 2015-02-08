@@ -1,5 +1,9 @@
 <?php namespace XenforoBridge\Middleware;
 
+use Closure;
+use Config;
+use Session;
+use Redirect;
 use XenforoBridge\XenforoBridge;
 
 class XenAuthAdminMiddleware {
@@ -29,11 +33,11 @@ class XenAuthAdminMiddleware {
      */
     public function handle($request, Closure $next)
     {
-        $xenBaseUrl = Config::get('xenforobridge::xenforo_base_url_path');
+        $xenBaseUrl = config('xenforobridge.xenforo_base_url_path');
 
         if(!$this->xenforo->isSuperAdmin() AND ! $this->xenforo->isBanned())
         {
-            Session::put('loginRedirect', Request::url());
+            Session::put('loginRedirect', $request->url());
             return Redirect::to($xenBaseUrl.'login');
         }
         
