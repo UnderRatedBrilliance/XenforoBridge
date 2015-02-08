@@ -29,10 +29,13 @@ class XenforoBridgeServiceProvider extends ServiceProvider {
                 });
 	}
         
-        public function boot()
-        {
-        	
-        }
+    public function boot()
+    {
+    	$app = $this->app;
+
+    	$configPath = __DIR__ .'/../config/xenforobridge.php';
+    	$this->publishes([$configPath => config_path('xenforobridge.php')], 'config');
+    }
 
 	/**
 	 * Get the services provided by the provider.
