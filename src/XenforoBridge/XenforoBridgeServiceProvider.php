@@ -19,25 +19,27 @@ class XenforoBridgeServiceProvider extends ServiceProvider {
 	public function register()
 	{
 
-		$this->app->singleton('XenforoBridge', function($app)
-                {
-                    $app['XenforoBridge.loaded'] = true;
+		$this->app['xenforobridge'] = $this->app->share(
+			function($app) {
+				$app['XenforoBridge.loaded'] = true;
 
-                    $xenforoDir = $app['config']->get('xenforobridge::xenforo_directory_path');
-                    $xenforoBaseUrl = $app['config']->get('xenforobridge::xenforo_base_url_path');
-                    return new XenforoBridge($xenforoDir, $xenforoBaseUrl);
-                });
+				$xenforoDir = config('xenforobridge.xenforo_directory_path');
+				$xenforoBaseUrl = config('xenforobridge.xenforo_base_url_path');
+				
+				return new XenforoBridge($xenforoDir, $xenforoBaseUrl);
+			}
+		);
+
+		$this->app->alias('xenforobridge', 'XenforoBridge\XenforoBridge');
 	}
         
-        public function boot()
-        {
-            //Initialize package
-            $this->package('urb/xenforobridge',null, __DIR__.'/../');
+    public function boot()
+    {
+    	$app = $this->app;
 
-            //include our filters
-			include __DIR__.'/../filters.php';      
-
-        }
+    	$configPath = __DIR__ .'/../config/xenforobridge.php';
+    	$this->publishes([$configPath => config_path('xenforobridge.php')], 'config');
+    }
 
 	/**
 	 * Get the services provided by the provider.
@@ -46,7 +48,7 @@ class XenforoBridgeServiceProvider extends ServiceProvider {
 	 */
 	public function provides()
 	{
-		return array('XenforBridge');
+		return array('xenforobridge');
 	}
 
 }
