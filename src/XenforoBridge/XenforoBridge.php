@@ -5,10 +5,10 @@ use XenforoBridge\Contracts\VisitorInterface;
 use XenforoBridge\Contracts\TemplateInterface;
 use XenforoBridge\Template\Template;
 use XenforoBridge\Visitor\Visitor;
-use XenforoBridge\User\User;
 use XenForo_Autoloader;
 use XenForo_Application;
 use XenForo_Session;
+use Xenforo_Model_User;
 
 class XenforoBridge
 {
@@ -26,7 +26,7 @@ class XenforoBridge
 
 		//Intialize Xenforo Application
 		XenForo_Autoloader::getInstance()->setupAutoloader($xenforoDir .'/library');
-		XenForo_Application::initialize($xenforoDir . '/library', $xenforoDir);	
+		XenForo_Application::initialize($xenforoDir . '/library', $xenforoDir);
 		//XenForo_Application::set('page_start_time', $startTime);
 		XenForo_Session::startPublicSession();
 
@@ -46,12 +46,12 @@ class XenforoBridge
 	}
 
 	/**
-	* Attempts to load Xenforo_Autloader.php throws exception if 
-	* unable to find or load.
-	*
-	* @param string $xenforoDir - Full path to Xenforo Directory
-	* @return boolean
-	*/
+	 * Attempts to load Xenforo_Autloader.php throws exception if
+	 * unable to find or load.
+	 *
+	 * @param string $xenforoDir - Full path to Xenforo Directory
+	 * @return boolean
+	 */
 	protected function loadXenAutoloader($xenforoDir)
 	{
 		$path = $xenforoDir. '/library/XenForo/Autoloader.php';
@@ -64,7 +64,7 @@ class XenforoBridge
 		}
 	}
 
-	public function getVisitor() 
+	public function getVisitor()
 	{
 		return $this->visitor->getCurrentVisitor();
 	}
@@ -85,9 +85,22 @@ class XenforoBridge
 	}
 
 	public function renderTemplate( $name    = 'PAGE_CONTAINER',
-								    $content = '',
-								    $params  = array())
+									$content = '',
+									$params  = array())
 	{
 		return $this->template->renderTemplate($name,$content,$params);
+	}
+
+	/**
+	 * Retrieve Xenforo User by Id
+	 *
+	 * If no user is found returns empty array
+	 *
+	 * @param $id
+	 * @return array
+	 */
+	public function getUserById($id)
+	{
+		return (new Xenforo_Model_User)->getUserById($id)?:[];
 	}
 }
