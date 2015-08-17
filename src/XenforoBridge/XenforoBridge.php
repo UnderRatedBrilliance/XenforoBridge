@@ -5,10 +5,14 @@ use XenforoBridge\Contracts\VisitorInterface;
 use XenforoBridge\Contracts\TemplateInterface;
 use XenforoBridge\Template\Template;
 use XenforoBridge\Visitor\Visitor;
+use XenforoBridge\User\User;
 use XenForo_Autoloader;
 use XenForo_Application;
 use XenForo_Session;
 use Xenforo_Model_User;
+use XenForo_DataWriter;
+use XenForo_Phrase;
+use XenForo_Authentication_Abstract;
 
 class XenforoBridge
 {
@@ -74,6 +78,11 @@ class XenforoBridge
 		return $this->visitor->isBanned();
 	}
 
+	public function isAdmin()
+	{
+		return $this->visitor->isAdmin();
+	}
+
 	public function isSuperAdmin()
 	{
 		return $this->visitor->isSuperAdmin();
@@ -91,16 +100,89 @@ class XenforoBridge
 		return $this->template->renderTemplate($name,$content,$params);
 	}
 
+	public function getUserById($id)
+	{
+		return (new XenForo_Model_User)->getUserById($id)?:[];
+	}
+
 	/**
-	 * Retrieve Xenforo User by Id
+	 * Retrieve Xenforo User by Email
 	 *
 	 * If no user is found returns empty array
 	 *
-	 * @param $id
+	 * @param $email
 	 * @return array
 	 */
-	public function getUserById($id)
+	public function getUserByEmail($email)
 	{
-		return (new Xenforo_Model_User)->getUserById($id)?:[];
+		return (new XenForo_Model_User)->getUserByEmail($email)?:[];
+	}
+
+	public function getUserByName($name)
+	{
+		return (new XenForo_Model_User)->getUserByName($name)?:[];
+	}
+
+	public function setPassword($password, $passwordConfirm = false, XenForo_Authentication_Abstract $auth = null, $requirePassword = false)
+	{
+		if ($requirePassword && $password === '')
+		{
+			return new XenForo_Phrase('please_enter_valid_password');
+		}
+		if ($passwordConfirm !== false && $password !== $passwordConfirm)
+		{
+			return new XenForo_Phrase('passwords_did_not_match');
+		}
+		if (!$auth)
+		{
+			$auth = XenForo_Authentication_Abstract::createDefault();
+		}
+		$authData = $auth->generate($password);
+		if (!$authData)
+		{
+			return new XenForo_Phrase('please_enter_valid_password');
+		}
+		return array('scheme_class' => $auth->getClassName(), 'data' => $authData);
+	}
+
+	public function addUser($email,$username,$password,array $additional = [])
+	{
+		// Verify Password
+		$userPassword = $this->setPassword($password);
+		if(is_object($userPassword) && get_class($userPassword) == 'XenForo_Phrase') {
+			return $userPassword;
+		}
+
+		$writer = XenForo_DataWriter::create('XenForo_DataWriter_User');
+
+		$info = array_merge($additional, array(
+			'username' => $username,
+			'email' => $email,
+			'user_group_id' => XenForo_Model_User::$defaultRegisteredGroupId,
+			'language_id' => $this->getVisitor()->get('language_id'),
+		));
+
+		$writer->advanceRegistrationUserState();
+
+		$writer->bulkSet($info);
+
+		// Set user password
+		$writer->set('scheme_class', $userPassword['scheme_class']);
+		$writer->set('data', $userPassword['data'], 'xf_user_authenticate');
+
+		// Save user
+		$writer->save();
+		$user = $writer->getMergedData();
+
+		if(!$user['user_id']) {
+			return new XenForo_Phrase('user_was_not_created');
+		}
+		// log the ip of the user registering
+		XenForo_Model_Ip::log($user['user_id'], 'user', $user['user_id'], 'register');
+
+		/*if ($user['user_state'] == 'email_confirm') {
+			XenForo_Model::create('XenForo_Model_UserConfirmation')->sendEmailConfirmation($user);
+		}*/
+		return $user['user_id'];
 	}
 }

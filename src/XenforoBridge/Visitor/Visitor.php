@@ -17,6 +17,11 @@ class Visitor implements VisitorInterface
 		return $this->getCurrentVisitor()->toArray()['is_banned'];
 	}
 
+	public function isAdmin()
+	{
+		return $this->getCurrentVisitor->toArray()['is_admin'];
+	}
+	
 	public function isSuperAdmin()
 	{
 		return $this->getCurrentVisitor()->isSuperAdmin();
