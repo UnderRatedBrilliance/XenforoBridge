@@ -1,30 +1,42 @@
 XenforoBridge
 =============
 
-Simple to use XenForo bridge libary. The goal of this package is to allow developer to easily integrate their existing/new application with XenForo Forum Platfrom. This package is still heavily underdevelopment so use with caution. I have also included a ServiceProvider to use within a Laravel application.
+Simple to use XenForo bridge library. The goal of this package is to allow developer to easily integrate their existing/new application with XenForo Forum Platfrom. This package is still heavily underdevelopment so use with caution. I have also included a ServiceProvider to use within a Laravel application.
 
 Installation
 ------------
 
-Install the XenforoBridge package with Composer.
+Install the XenforoBridge package with Composer by adding the folowing to your composer.json file.
 
 ```json
 {
     "require": {
-        "urb/xenforobridge": "dev-master"
+        "urb/xenforobridge": "dev-development"
     }
 }
 ```
+Or by using the composer require command
 
-To install XenforoBridge into Laravel 4 simple add the following service provider to your 'app/config/app.php' in the 'providers' array:
+```
+composer require urb/xenforobridge:dev-development
+```
+
+To install XenforoBridge into Laravel 5 simple add the following service provider to your 'config/app.php' in the 'providers' array:
 
 ```php
 'providers' => array(
-		'XenforoBridge\XenforoBridgeServiceProvider',
+		'XenforoBridge\XenforoBridgeServiceProvider::class',
 )
 
 ```
-Then publish the config file with 'php artisan config:publish urb/xenforobridge'. This will add the file 'app/config/packages/urb/xenforobridge/config.php'. This is where you will place the needed configurations to use the Xenforo Bridge.
+
+Then publish the config file with
+
+```
+php artisan vendor:publish
+```
+
+This will add the file 'config/xenforobridge.php'. This is where you will place the needed configurations to use the Xenforo Bridge.
 
 Within this config file you will need to supply the full directory path to your XenForo installation and the base url path like the example below
 
@@ -34,6 +46,47 @@ return array(
 		'xenforo_base_url_path'  => '//example.com/forums/', //Default '/'
 	);
 ```
+
+Installing Middleware
+---------------------
+To install Middleware you wil need to open up the app\Http\Kernel.php and the following middleware to either global middleware array
+or the routeMiddleware array.
+
+Here is an example adding to the routeMiddleware array
+
+```php
+protected $routeMiddleware = [
+		'xen.auth' => 'XenforoBridge\Middleware\XenAuthMiddleware',
+		'xen.auth.admin' => 'XenforoBridge\Middleware\XenAuthAdminMiddleware',
+	];
+
+```
+
+You can then use them in your routes like so
+
+```php
+Route::get('/example', ['middleware' => 'xen.auth',function(){
+	//Do stuff
+}]);
+```
+
+or you can use them in your controllers themselves
+
+```php
+class SampleController extends Controller {
+
+
+    function __construct()
+    {
+
+        $this->middleware('xen.auth');
+    }
+
+}
+
+```
+
+For more information on Middleware development an installation check out [Laravel Docs - Middleware](http://laravel.com/docs/5.1/middleware)
 
 Credits
 -------
