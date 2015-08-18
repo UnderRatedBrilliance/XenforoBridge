@@ -23,7 +23,7 @@ class User implements UserInterface
      */
     public function __construct()
     {
-        $this->user = $this->setUser(new XenforoUser);
+        $this->setUser(new XenforoUser);
     }
 
     /**
