@@ -1,104 +1,323 @@
 <?php namespace XenforoBridge;
 
-use XenforoBridge\Exceptions\XenforoAutloaderException;
-use XenforoBridge\Contracts\VisitorInterface;
+/**
+ * Contracts and Exceptions
+ */
 use XenforoBridge\Contracts\TemplateInterface;
+use XenforoBridge\Contracts\VisitorInterface;
+use XenforoBridge\Contracts\UserInterface;
+use XenforoBridge\Exceptions\XenforoAutoloaderException;
+
+/**
+ * Default XenforoBridge Implementations
+ */
 use XenforoBridge\Template\Template;
 use XenforoBridge\Visitor\Visitor;
 use XenforoBridge\User\User;
+
+/**
+ * Required XenForo Classes
+ */
 use XenForo_Autoloader;
 use XenForo_Application;
 use XenForo_Session;
-use Xenforo_Model_User;
-use XenForo_DataWriter;
-use XenForo_Phrase;
-use XenForo_Authentication_Abstract;
+use XenForo_Options;
+
 
 class XenforoBridge
 {
-	protected $xenforoDir;
-	protected $visitor;
-	protected $template;
+    /**
+     * Xenforo Option Id for the boards base url
+     */
+    const XENFORO_OPTION_BASE_URL = 'boardUrl';
 
-	public function __construct($xenforoDir, $xenforoBaseUrl)
+    /**
+     * Absolute Path to Xenforo Directory
+     * (ex. /home/username/www/forums/ )
+     *
+     * @var string
+     */
+    protected $xenforoDirectoryPath;
+
+    /**
+     * Base Url to Xenforo Application
+     * (ex. http://example.com/forums | http://example.com)
+     *
+     * @var string
+     */
+    protected $xenforoBaseUrl;
+
+    /**
+     * @var \XenForo_Options
+     */
+    protected $xenforoOptions;
+
+    /**
+     * @var VisitorInterface
+     */
+    protected $visitor;
+
+    /**
+     * @var TemplateInterface
+     */
+    protected $template;
+
+    /**
+     * @var UserInterface
+     */
+    protected $user;
+
+    /**
+     * Bootstrap XenforoBridge
+     *
+     * @param $xenforoDirectoryPath
+     * @param null|string $xenforoBaseUrl
+     * @throws XenforoAutoloaderException
+     */
+    public function __construct($xenforoDirectoryPath, $xenforoBaseUrl = null)
+    {
+        $this->xenforoDirectoryPath = $xenforoDirectoryPath;
+
+        //Load Xenforo Autoloader
+        $this->loadXenAutoloader($this->xenforoDirectoryPath);
+
+        //Bootstrap Xenforo App
+        $this->bootstrapXenforo($this->xenforoDirectoryPath);
+
+        //Set Xenforo Base Url
+        $this->setXenforoBaseUrl($xenforoBaseUrl);
+    }
+
+    /**
+     * Set Xenforo Base Url
+     *
+     * @param null|string $url
+     */
+    public function setXenforoBaseUrl($url = null)
+    {
+        $this->xenforoBaseUrl = $this->retrieveXenforoBaseUrl($url);
+    }
+
+    /**
+     * Retrieve Xenforo Application base url from Xenforo itself if none is supplied
+     *
+     * @param null|string $url
+     * @return mixed|null|string
+     */
+    public function retrieveXenforoBaseUrl($url = null)
+    {
+        if(!is_null($url))
+        {
+            return $url;
+        }
+
+        return $this->getXenforoOptionById(self::XENFORO_OPTION_BASE_URL);
+    }
+
+    /**
+     * @return mixed|null|string
+     */
+    public function getXenforoBaseUrl()
+    {
+        if(!$this->xenforoBaseUrl)
+        {
+            $this->xenforoBaseUrl = $this->retrieveXenforoBaseUrl();
+        }
+
+        return $this->xenforoBaseUrl;
+    }
+    /**
+     * Bootstrap Xenforo Application and Start a Public Session
+     *
+     * @param string $directoryPath
+     */
+    protected function bootstrapXenforo($directoryPath)
+    {
+        XenForo_Autoloader::getInstance()->setupAutoloader($directoryPath .'/library');
+        XenForo_Application::initialize($directoryPath . '/library', $directoryPath);
+        XenForo_Session::startPublicSession();
+    }
+
+    /**
+     * Get all Xenforo Options
+     *
+     * @return mixed|XenForo_Options
+     * @throws \Zend_Exception
+     */
+    protected function getXenforoOptions()
+    {
+        if(!$this->xenforoOptions instanceof XenForo_Options)
+        {
+            $this->xenforoOptions = XenForo_Application::get('options');
+        }
+        return $this->xenforoOptions;
+    }
+
+    /**
+     * Get Xenforo Option by id
+     *
+     * @param string $id
+     * @return mixed|null
+     */
+    protected function getXenforoOptionById($id)
+    {
+        return $this->getXenforoOptions()->get($id);
+    }
+
+    /**
+     * Attempts to load Xenforo_Autoloader.php throws exception if
+     * unable to find or load.
+     *
+     * @param string $xenforoDirectory - Full path to Xenforo Directory
+     * @return bool
+     * @throws XenforoAutoloaderException
+     */
+	protected function loadXenAutoloader($xenforoDirectory)
 	{
-		//Inject Dependencies
-		$this->xenforoDir = $xenforoDir;
-
-		//Load Xenforo Autoloader
-		$this->loadXenAutoloader($xenforoDir);
-
-		//Intialize Xenforo Application
-		XenForo_Autoloader::getInstance()->setupAutoloader($xenforoDir .'/library');
-		XenForo_Application::initialize($xenforoDir . '/library', $xenforoDir);
-		//XenForo_Application::set('page_start_time', $startTime);
-		XenForo_Session::startPublicSession();
-
-		//Load XenforoBridge Modules 
-		$this->setVisitor(new Visitor);
-		$this->setTemplate(new Template($xenforoBaseUrl));
-	}
-
-	public function setVisitor(VisitorInterface $visitor)
-	{
-		$this->visitor = $visitor;
-	}
-
-	public function setTemplate(TemplateInterface $template)
-	{
-		$this->template = $template;
-	}
-
-	/**
-	 * Attempts to load Xenforo_Autloader.php throws exception if
-	 * unable to find or load.
-	 *
-	 * @param string $xenforoDir - Full path to Xenforo Directory
-	 * @return boolean
-	 */
-	protected function loadXenAutoloader($xenforoDir)
-	{
-		$path = $xenforoDir. '/library/XenForo/Autoloader.php';
+		$path = $xenforoDirectory. '/library/XenForo/Autoloader.php';
 
 		$autoloader = include($path);
 
 		if(!$autoloader)
 		{
-			throw new XenforoAutloaderException('Could not load XenForo_Autoloader.php check path');
+			throw new XenforoAutoloaderException('Could not load XenForo_Autoloader.php check path');
 		}
 	}
 
-	public function getVisitor()
-	{
-		return $this->visitor->getCurrentVisitor();
-	}
+    /**
+     * Retrieve Visitor Class
+     *
+     * @return VisitorInterface
+     */
+    public function retrieveVisitor()
+    {
+        if(!$this->visitor instanceof VisitorInterface)
+        {
+            $this->setVisitor(new Visitor);
+        }
 
-	public function isBanned()
-	{
-		return $this->visitor->isBanned();
-	}
+        return $this->visitor;
+    }
 
+    /**
+     * Set a new Visitor implementation
+     *
+     * @param VisitorInterface $visitor
+     */
+    public function setVisitor(VisitorInterface $visitor)
+    {
+        $this->visitor = $visitor;
+    }
+
+    /**
+     * Gets singleton instance of Xenforo_Visitor
+     *
+     * @return \XenForo_Visitor
+     */
+    public function getVisitor()
+    {
+        return $this->retrieveVisitor()->getCurrentVisitor();
+    }
+
+    /**
+     * Checks if current visitor is banned
+     *
+     * @return boolean
+     */
+    public function isBanned()
+    {
+        return (bool)$this->retrieveVisitor()->isBanned();
+    }
+
+    /**
+     * Checks if current visitor is an Admin
+     *
+     * @return boolean
+     */
 	public function isAdmin()
 	{
-		return $this->visitor->isAdmin();
+		return $this->retrieveVisitor()->isAdmin();
 	}
 
+    /**
+     * Checks if visitor is a Super Admin
+     *
+     * @return boolean
+     */
 	public function isSuperAdmin()
 	{
-		return $this->visitor->isSuperAdmin();
+		return $this->retrieveVisitor()->isSuperAdmin();
 	}
 
+    /**
+     * Checks if visitor is currently logged in
+     *
+     * @return boolean
+     */
 	public function isLoggedIn()
 	{
-		return $this->visitor->isLoggedIn();
+		return $this->retrieveVisitor()->isLoggedIn();
 	}
 
+    /**
+     * Checks if visitor has a particular permission
+     *
+     * @param $group - permission group
+     * @param $permission - permission
+     * @return mixed
+     */
+    public function hasPermission($group,$permission)
+    {
+        return $this->retrieveVisitor()->hasPermission($group,$permission);
+    }
+
+    /**
+     * Retrieve Template set default implementation if one is not set already
+     *
+     * @return TemplateInterface
+     */
+    public function retrieveTemplate()
+    {
+        if(!$this->template instanceof TemplateInterface)
+        {
+            $this->setTemplate(new Template($this->getXenforoBaseUrl()));
+        }
+
+        return $this->template;
+    }
+
+    /**
+     * Set Template
+     *
+     * @param TemplateInterface $template
+     */
+    public function setTemplate(TemplateInterface $template)
+    {
+        $this->template = $template;
+    }
+
+    /**
+     * Render a Xenforo Template
+     *
+     * @todo simplify method signature reverse the order of content parameter
+     *
+     * @param string $name - template_id
+     * @param string $content - this will override the entire content area of the template
+     * @param array $params - parameters pasted to the template renderer
+     * @return mixed
+     */
 	public function renderTemplate( $name    = 'PAGE_CONTAINER',
 									$content = '',
 									$params  = array())
 	{
-		return $this->template->renderTemplate($name,$content,$params);
+		return $this->retrieveTemplate()->renderTemplate($name,$content,$params);
 	}
+
+
+
+
+
+
 
 	public function getUserById($id)
 	{

@@ -1,6 +1,8 @@
 <?php namespace XenforoBridge\Exceptions;
 
-class XenforoAutoloaderException.php extends Exception
+use Exception;
+
+class XenforoAutoloaderException extends Exception
 {
 
 }

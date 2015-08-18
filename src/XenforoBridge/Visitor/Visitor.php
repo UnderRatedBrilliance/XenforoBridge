@@ -14,21 +14,26 @@ class Visitor implements VisitorInterface
 
 	public function isBanned()
 	{
-		return $this->getCurrentVisitor()->toArray()['is_banned'];
+		return (bool)$this->getCurrentVisitor()->toArray()['is_banned'];
 	}
 
 	public function isAdmin()
 	{
-		return $this->getCurrentVisitor->toArray()['is_admin'];
+		return (bool)$this->getCurrentVisitor()->toArray()['is_admin'];
 	}
 	
 	public function isSuperAdmin()
 	{
-		return $this->getCurrentVisitor()->isSuperAdmin();
+		return (bool)$this->getCurrentVisitor()->isSuperAdmin();
 	}
 
 	public function isLoggedIn()
 	{
-		return $this->getCurrentVisitor()->getUserId();
+		return (bool)$this->getCurrentVisitor()->getUserId();
+	}
+
+	public function hasPermission($group,$permission)
+	{
+		return $this->getCurrentVisitor()->hasPermission($group,$permission);
 	}
 }
