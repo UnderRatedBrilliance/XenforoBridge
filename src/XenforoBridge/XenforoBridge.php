@@ -32,6 +32,11 @@ class XenforoBridge
     const XENFORO_OPTION_BASE_URL = 'boardUrl';
 
     /**
+     * Default language id for Xenforo
+     */
+    const XENFOROBRIDGE_DEFAULT_LANGUAGE_ID = 1;
+
+    /**
      * Absolute Path to Xenforo Directory
      * (ex. /home/username/www/forums/ )
      *
@@ -144,7 +149,7 @@ class XenforoBridge
      * @return mixed|XenForo_Options
      * @throws \Zend_Exception
      */
-    protected function getXenforoOptions()
+    public function getXenforoOptions()
     {
         if(!$this->xenforoOptions instanceof XenForo_Options)
         {
@@ -159,7 +164,7 @@ class XenforoBridge
      * @param string $id
      * @return mixed|null
      */
-    protected function getXenforoOptionById($id)
+    public function getXenforoOptionById($id)
     {
         return $this->getXenforoOptions()->get($id);
     }
@@ -297,6 +302,16 @@ class XenforoBridge
     }
 
     /**
+     * Get current implementation of Template
+     *
+     * @return TemplateInterface
+     */
+    public function getTemplate()
+    {
+        return $this->retrieveTemplate();
+    }
+
+    /**
      * Render a Xenforo Template
      *
      * @todo simplify method signature reverse the order of content parameter
@@ -310,18 +325,53 @@ class XenforoBridge
 									$content = '',
 									$params  = array())
 	{
-		return $this->retrieveTemplate()->renderTemplate($name,$content,$params);
+		return $this->getTemplate()->renderTemplate($name,$content,$params);
 	}
 
+    /**
+     * Return current implementation or set Default User
+     *
+     * @return UserInterface
+     */
+    public function retrieveUser()
+    {
+        if(!$this->user instanceof UserInterface)
+        {
+            $this->setUser(new User);
+        }
 
+        return $this->user;
+    }
 
+    /**
+     * Set current implementation of User
+     *
+     * @param UserInterface $user
+     */
+    public function setUser(UserInterface $user)
+    {
+        $this->user = $user;
+    }
 
+    /**
+     * Return current User implementation
+     *
+     * @return UserInterface
+     */
+    public function getUser()
+    {
+        return $this->retrieveUser();
+    }
 
-
-
+    /**
+     * Find User by Id
+     *
+     * @param $id
+     * @return array
+     */
 	public function getUserById($id)
 	{
-		return (new XenForo_Model_User)->getUserById($id)?:[];
+		return $this->getUser()->getUserById($id);
 	}
 
 	/**
@@ -334,74 +384,18 @@ class XenforoBridge
 	 */
 	public function getUserByEmail($email)
 	{
-		return (new XenForo_Model_User)->getUserByEmail($email)?:[];
+		return $this->getUser()->getUserByEmail($email);
 	}
 
+    /**
+     * Get Xenforo User by Username - if no user is found returns empty array
+     *
+     * @param $name
+     * @return array
+     */
 	public function getUserByName($name)
 	{
-		return (new XenForo_Model_User)->getUserByName($name)?:[];
+		return $this->getUser()->getUserByUsername($name);
 	}
 
-	public function setPassword($password, $passwordConfirm = false, XenForo_Authentication_Abstract $auth = null, $requirePassword = false)
-	{
-		if ($requirePassword && $password === '')
-		{
-			return new XenForo_Phrase('please_enter_valid_password');
-		}
-		if ($passwordConfirm !== false && $password !== $passwordConfirm)
-		{
-			return new XenForo_Phrase('passwords_did_not_match');
-		}
-		if (!$auth)
-		{
-			$auth = XenForo_Authentication_Abstract::createDefault();
-		}
-		$authData = $auth->generate($password);
-		if (!$authData)
-		{
-			return new XenForo_Phrase('please_enter_valid_password');
-		}
-		return array('scheme_class' => $auth->getClassName(), 'data' => $authData);
-	}
-
-	public function addUser($email,$username,$password,array $additional = [])
-	{
-		// Verify Password
-		$userPassword = $this->setPassword($password);
-		if(is_object($userPassword) && get_class($userPassword) == 'XenForo_Phrase') {
-			return $userPassword;
-		}
-
-		$writer = XenForo_DataWriter::create('XenForo_DataWriter_User');
-
-		$info = array_merge($additional, array(
-			'username' => $username,
-			'email' => $email,
-			'user_group_id' => XenForo_Model_User::$defaultRegisteredGroupId,
-			'language_id' => $this->getVisitor()->get('language_id'),
-		));
-
-		$writer->advanceRegistrationUserState();
-
-		$writer->bulkSet($info);
-
-		// Set user password
-		$writer->set('scheme_class', $userPassword['scheme_class']);
-		$writer->set('data', $userPassword['data'], 'xf_user_authenticate');
-
-		// Save user
-		$writer->save();
-		$user = $writer->getMergedData();
-
-		if(!$user['user_id']) {
-			return new XenForo_Phrase('user_was_not_created');
-		}
-		// log the ip of the user registering
-		XenForo_Model_Ip::log($user['user_id'], 'user', $user['user_id'], 'register');
-
-		/*if ($user['user_state'] == 'email_confirm') {
-			XenForo_Model::create('XenForo_Model_UserConfirmation')->sendEmailConfirmation($user);
-		}*/
-		return $user['user_id'];
-	}
 }
