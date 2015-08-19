@@ -35,7 +35,7 @@ class XenAuthAdminMiddleware {
     {
         $xenBaseUrl = config('xenforobridge.xenforo_base_url_path');
 
-        if(!$this->xenforo->isSuperAdmin() AND ! $this->xenforo->isBanned())
+        if(!$this->xenforo->isAdmin() AND ! $this->xenforo->isBanned())
         {
             Session::put('loginRedirect', $request->url());
             return Redirect::to($xenBaseUrl.'login');
