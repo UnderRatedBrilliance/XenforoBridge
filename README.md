@@ -11,14 +11,14 @@ Install the XenforoBridge package with Composer by adding the folowing to your c
 ```json
 {
     "require": {
-        "urb/xenforobridge": "dev-development"
+        "urb/xenforobridge": "dev-master"
     }
 }
 ```
 Or by using the composer require command
 
 ```
-composer require urb/xenforobridge:dev-development
+composer require urb/xenforobridge:dev-master
 ```
 
 To install XenforoBridge into Laravel 5 simple add the following service provider to your 'config/app.php' in the 'providers' array:
