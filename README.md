@@ -3,6 +3,8 @@ XenforoBridge
 
 Simple to use XenForo bridge library. The goal of this package is to allow developer to easily integrate their existing/new application with XenForo Forum Platfrom. This package is still heavily underdevelopment so use with caution. I have also included a ServiceProvider to use within a Laravel application.
 
+If you would like to see this package in action we are currently using for (AstronomyConnect.com - ItemHub Database)[http://astronomyconnect.com/items]. This is a Laravel 5 app with Xenforo sitting within the public folder. Templates have been designed and implemented in Xenforo and are being rendered by this bridge instead of using Blade.
+
 Installation
 ------------
 
