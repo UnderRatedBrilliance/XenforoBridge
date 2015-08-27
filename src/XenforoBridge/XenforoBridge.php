@@ -323,9 +323,10 @@ class XenforoBridge
      */
 	public function renderTemplate( $name    = 'PAGE_CONTAINER',
 									$content = '',
-									$params  = array())
+									$params  = array(),
+                                    $container = Template::XENFORO_DEFAULT_CONTAINER)
 	{
-		return $this->getTemplate()->renderTemplate($name,$content,$params);
+		return $this->getTemplate()->renderTemplate($name,$content,$params,$container);
 	}
 
     /**
