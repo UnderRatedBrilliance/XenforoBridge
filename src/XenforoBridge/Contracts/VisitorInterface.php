@@ -14,4 +14,6 @@ interface VisitorInterface
     public function isLoggedIn();
 
     public function hasPermission($group, $permission);
+
+    public function getUserId();
 }

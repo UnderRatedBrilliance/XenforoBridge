@@ -265,6 +265,13 @@ class XenforoBridge
 	}
 
     /**
+     * Retrieve the current Visitors User id
+     */
+    public function getVisitorUserId()
+    {
+        $this->retrieveVisitor()->getUserId();
+    }
+    /**
      * Checks if visitor has a particular permission
      *
      * @param $group - permission group

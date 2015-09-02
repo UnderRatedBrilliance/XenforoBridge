@@ -36,4 +36,9 @@ class Visitor implements VisitorInterface
 	{
 		return $this->getCurrentVisitor()->hasPermission($group,$permission);
 	}
+
+	public function getUserId()
+	{
+		return (int)$this->getCurrentVisitor()->toArray()['user_id'];
+	}
 }
