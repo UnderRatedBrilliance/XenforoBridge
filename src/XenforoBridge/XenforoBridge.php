@@ -266,10 +266,12 @@ class XenforoBridge
 
     /**
      * Retrieve the current Visitors User id
+     *
+     * @return mixed
      */
     public function getVisitorUserId()
     {
-        $this->retrieveVisitor()->getUserId();
+       return $this->retrieveVisitor()->getUserId();
     }
     /**
      * Checks if visitor has a particular permission
