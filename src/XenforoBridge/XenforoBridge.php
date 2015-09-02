@@ -271,7 +271,7 @@ class XenforoBridge
      */
     public function getVisitorUserId()
     {
-       return $this->retrieveVisitor()->getUserId();
+       return $this->getVisitor()->getUserId();
     }
     /**
      * Checks if visitor has a particular permission
