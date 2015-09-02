@@ -3,5 +3,5 @@
 interface TemplateInterface
 {
 
-    public function renderTemplate($name, $content, $params);
+    public function renderTemplate($name, $content, $params, $container);
 }

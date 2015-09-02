@@ -9,6 +9,8 @@ use XenForo_ViewRenderer_HtmlPublic;
 use Zend_Controller_Response_Http;
 class Template implements TemplateInterface
 {
+
+	const XENFORO_DEFAULT_CONTAINER = 'PAGE_CONTAINER';
 	protected $xenBasePath;
 
 	public function __construct($xenBasePath)
@@ -28,7 +30,7 @@ class Template implements TemplateInterface
 	 * @param array $params - overrided xenforo template parameters
 	 * @return string;
 	 */
-	public function renderTemplate($name,$content = '', $params = array())
+	public function renderTemplate($name,$content = '', $params = array(), $container  = self::XENFORO_DEFAULT_CONTAINER)
 	{
 		$template = new XenForo_Dependencies_Public();
 
@@ -36,7 +38,7 @@ class Template implements TemplateInterface
 
 		$template->preRenderView();
 
-		$finalParams = $this->createParams($content, $params);
+		$finalParams = $this->createParams($content, $params, $container);
 
 
 		$response = new XenForo_ViewRenderer_HtmlPublic($template, new Zend_Controller_Response_Http(), new Zend_Controller_Request_Http());
@@ -80,7 +82,7 @@ class Template implements TemplateInterface
 	 * @param array $additionalParams(Optional) - merge additional parameters
 	 * @return array
 	 */
-	public function createParams($content = '', $additionalParams = array())
+	public function createParams($content = '', $additionalParams = array(),$container = self::XENFORO_DEFAULT_CONTAINER)
 	{
 		//Validates content
 		if(!is_string((string)$content))
@@ -91,6 +93,7 @@ class Template implements TemplateInterface
 			'contents'    => (string)$content,
 			'requestPaths'=> array('fullBasePath'=> $this->xenBasePath),
 			'serverTimeInfo' => array('now'=> time(),'today'=>time(),'todayDow'=>time()),
+			'containerTemplate' => $container,
 		);
 
 		$new_params = $this->getDependenciesPublic();
