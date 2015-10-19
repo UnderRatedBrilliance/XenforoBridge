@@ -3,6 +3,7 @@
 /**
  * Contracts and Exceptions
  */
+use XenForo_Model;
 use XenforoBridge\Contracts\TemplateInterface;
 use XenforoBridge\Contracts\VisitorInterface;
 use XenforoBridge\Contracts\UserInterface;
@@ -408,4 +409,69 @@ class XenforoBridge
 		return $this->getUser()->getUserByUsername($name);
 	}
 
+
+    /**
+     * Login and set user session to user id (No Validation is used on this method)
+     *
+     * @param (int) $user
+     * @param bool|false $remember
+     * @param bool|true $log
+     * @return mixed
+     */
+    public function loginAsUser($user, $remember = false,$log = true)
+    {
+        // Set Remember Cookie
+        if($remember)
+        {
+            /* @var XenForo_Model_User */
+            $this->getXenforoModel('XenForo_Model_User')->setUserRememberCookie($user);
+        }
+
+        //Log IP
+        if($log)
+        {
+            /* @var XenForo_Model_Ip */
+            $this->getXenforoModel('XenForo_Model_Ip')->logIp($user,'user',$user,'login');
+        }
+
+        $this->changeUserSession($user);
+
+        return $user;
+    }
+
+    /**
+     * Changes the users session to the corresponding user id
+     * use this method with caution
+     *
+     * @param $userId
+     */
+    protected function changeUserSession($userId)
+    {
+        //delete current session
+        $this->getXenforoModel('XenForo_Model_User')->deleteSessionActivity(0, $_SERVER['REMOTE_ADDR']);
+
+        $this->getSession()->changeUserId($userId);
+        $this->getVisitor()->setup($userId);
+    }
+
+    /**
+     * @param $model
+     * @return XenForo_Model
+     * @throws \XenForo_Exception
+     */
+    public function getXenforoModel($model)
+    {
+        return XenForo_Model::create($model);
+    }
+
+    /**
+     * Retrieves XenForo Session
+     *
+     * @return mixed
+     * @throws \Zend_Exception
+     */
+    public function getSession()
+    {
+        return XenForo_Application::get('session');
+    }
 }
