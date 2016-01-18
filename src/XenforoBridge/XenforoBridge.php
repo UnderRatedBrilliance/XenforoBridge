@@ -182,7 +182,7 @@ class XenforoBridge
 	{
 		$path = $xenforoDirectory. '/library/XenForo/Autoloader.php';
 
-		$autoloader = include($path);
+		$autoloader = include_once($path);
 
 		if(!$autoloader)
 		{
