@@ -42,7 +42,16 @@ class Template implements TemplateInterface
 
 
 		$response = new XenForo_ViewRenderer_HtmlPublic($template, new Zend_Controller_Response_Http(), new Zend_Controller_Request_Http());
-		
+
+        // If the container and template happen to be the same to prevent duplication pass content directly into container
+		if($name == $container)
+    {
+            return $response->renderContainer(
+                $content,
+                $finalParams
+            );
+        }
+
 		return $response->renderContainer(
 			$response->renderView('urb_itemhub_view', $finalParams, $name),
 			$finalParams
