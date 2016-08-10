@@ -42,7 +42,7 @@ class Template implements TemplateInterface
 
 
 		$response = new XenForo_ViewRenderer_HtmlPublic($template, new Zend_Controller_Response_Http(), new Zend_Controller_Request_Http());
-
+		
 		return $response->renderContainer(
 			$response->renderView('urb_itemhub_view', $finalParams, $name),
 			$finalParams

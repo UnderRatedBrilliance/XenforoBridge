@@ -423,7 +423,7 @@ class XenforoBridge
         // Set Remember Cookie
         if($remember)
         {
-            /* @var XenForo_Model_User */
+            /* @var \XenForo_Model_User */
             $this->getXenforoModel('XenForo_Model_User')->setUserRememberCookie($user);
         }
 
