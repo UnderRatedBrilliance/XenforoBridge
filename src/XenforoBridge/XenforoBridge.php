@@ -1,20 +1,20 @@
-<?php namespace XenforoBridge;
+<?php namespace Urb\XenforoBridge;
 
 /**
  * Contracts and Exceptions
  */
 use XenForo_Model;
-use XenforoBridge\Contracts\TemplateInterface;
-use XenforoBridge\Contracts\VisitorInterface;
-use XenforoBridge\Contracts\UserInterface;
-use XenforoBridge\Exceptions\XenforoAutoloaderException;
+use Urb\XenforoBridge\Contracts\TemplateInterface;
+use Urb\XenforoBridge\Contracts\VisitorInterface;
+use Urb\XenforoBridge\Contracts\UserInterface;
+use Urb\XenforoBridge\Exceptions\XenforoAutoloaderException;
 
 /**
  * Default XenforoBridge Implementations
  */
-use XenforoBridge\Template\Template;
-use XenforoBridge\Visitor\Visitor;
-use XenforoBridge\User\User;
+use Urb\XenforoBridge\Template\Template;
+use Urb\XenforoBridge\Visitor\Visitor;
+use Urb\XenforoBridge\User\User;
 
 /**
  * Required XenForo Classes

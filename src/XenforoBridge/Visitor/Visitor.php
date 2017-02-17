@@ -1,6 +1,6 @@
-<?php namespace XenforoBridge\Visitor;
+<?php namespace Urb\XenforoBridge\Visitor;
 
-use XenforoBridge\Contracts\VisitorInterface;
+use Urb\XenforoBridge\Contracts\VisitorInterface;
 use XenForo_Visitor;
 
 

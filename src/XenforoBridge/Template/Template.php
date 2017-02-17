@@ -1,12 +1,14 @@
-<?php namespace XenforoBridge\Template;
+<?php namespace Urb\XenforoBridge\Template;
 
-use XenforoBridge\Contracts\TemplateInterface;
+use Urb\XenforoBridge\Contracts\TemplateInterface;
 use XenForo_Application;
 use XenForo_Dependencies_Public;
 use Zend_Controller_Request_Http;
 use XenForo_ControllerResponse_View;
 use XenForo_ViewRenderer_HtmlPublic;
 use Zend_Controller_Response_Http;
+use \Exception;
+
 class Template implements TemplateInterface
 {
 
@@ -26,7 +28,7 @@ class Template implements TemplateInterface
 	 * Render view with Xenforo Template
 	 *
 	 * @param string $name - template name
-	 * @param string $contents - xenforo template contents
+	 * @param string $content - xenforo template contents
 	 * @param array $params - overrided xenforo template parameters
 	 * @return string;
 	 */
@@ -78,7 +80,7 @@ class Template implements TemplateInterface
 	/**
 	 * Create parameters for rendering xenforo templates
 	 *
-	 * @param string $contents - main content area of template
+	 * @param string $content - main content area of template
 	 * @param array $additionalParams(Optional) - merge additional parameters
 	 * @return array
 	 */

@@ -1,4 +1,4 @@
-<?php namespace XenforoBridge\Contracts;
+<?php namespace Urb\XenforoBridge\Contracts;
 
 interface UserInterface
 {

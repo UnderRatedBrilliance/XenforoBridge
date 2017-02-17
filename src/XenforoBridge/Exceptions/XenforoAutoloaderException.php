@@ -1,4 +1,4 @@
-<?php namespace XenforoBridge\Exceptions;
+<?php namespace Urb\XenforoBridge\Exceptions;
 
 use Exception;
 

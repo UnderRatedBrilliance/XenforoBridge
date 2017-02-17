@@ -1,4 +1,4 @@
-<?php namespace XenforoBridge;
+<?php namespace Urb\XenforoBridge;
 
 use Illuminate\Support\ServiceProvider;
 
@@ -19,7 +19,7 @@ class XenforoBridgeServiceProvider extends ServiceProvider {
 	public function register()
 	{
 
-		$this->app['xenforobridge'] = $this->app->share(
+		$this->app['xenforobridge'] = $this->app->singleton(
 			function($app) {
 				$app['XenforoBridge.loaded'] = true;
 
@@ -30,7 +30,7 @@ class XenforoBridgeServiceProvider extends ServiceProvider {
 			}
 		);
 
-		$this->app->alias('xenforobridge', 'XenforoBridge\XenforoBridge');
+		$this->app->alias('xenforobridge', 'Urb\XenforoBridge\XenforoBridge');
 	}
         
     public function boot()

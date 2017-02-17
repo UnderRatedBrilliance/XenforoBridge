@@ -1,12 +1,12 @@
-<?php namespace XenforoBridge\User;
+<?php namespace Urb\XenforoBridge\User;
 
 use XenForo_Authentication_Abstract;
 use XenForo_DataWriter;
 use XenForo_Model_Ip;
 use XenForo_Phrase;
-use XenforoBridge\Contracts\UserInterface;
+use Urb\XenforoBridge\Contracts\UserInterface;
 use XenForo_Model_User as XenforoUser;
-use XenforoBridge\XenforoBridge;
+use Urb\XenforoBridge\XenforoBridge;
 
 
 class User implements UserInterface

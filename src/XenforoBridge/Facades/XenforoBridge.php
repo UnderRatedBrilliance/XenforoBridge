@@ -1,6 +1,6 @@
 <?php
 
-namespace XenforoBridge\Facades;
+namespace Urb\XenforoBridge\Facades;
 
 use Illuminate\Support\Facades\Facade;
 

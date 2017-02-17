@@ -1,10 +1,10 @@
-<?php namespace XenforoBridge\Middleware;
+<?php namespace Urb\XenforoBridge\Middleware;
 
 use Closure;
 use Config;
 use Session;
 use Redirect;
-use XenforoBridge\XenforoBridge;
+use Urb\XenforoBridge\XenforoBridge;
 
 class XenAuthAdminMiddleware {
 
@@ -17,7 +17,7 @@ class XenAuthAdminMiddleware {
     /**
      * Construct Middleware Class
      * 
-     * @param \XenforoBridge\XenforoBridge $xenforo 
+     * @param \Urb\XenforoBridge\XenforoBridge $xenforo
      */
     public function __construct(XenforoBridge $xenforo)
     {
