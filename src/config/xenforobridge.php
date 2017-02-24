@@ -2,5 +2,6 @@
 
 return array(
 		'xenforo_directory_path' => 'FULL PATH HERE',
-		'xenforo_base_url_path'  => '/', //Default '/'
+		'xenforo_base_url_path'  => '/', //Default '/',
+        'use_xenforo_auth'       => true,
 	);

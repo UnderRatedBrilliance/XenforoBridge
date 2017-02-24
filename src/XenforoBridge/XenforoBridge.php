@@ -226,6 +226,17 @@ class XenforoBridge
     }
 
     /**
+     * Get Xenforo Bridge Visitor Object
+     * (use instead of geting Xenforo_Visitor class)
+     *
+     * @return VisitorInterface
+     */
+    public function getVisitorObject()
+    {
+        return $this->retrieveVisitor();
+    }
+
+    /**
      * Checks if current visitor is banned
      *
      * @return boolean

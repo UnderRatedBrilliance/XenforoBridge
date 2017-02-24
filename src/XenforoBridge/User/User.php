@@ -1,5 +1,6 @@
 <?php namespace Urb\XenforoBridge\User;
 
+use Illuminate\Contracts\Auth\Authenticatable;
 use XenForo_Authentication_Abstract;
 use XenForo_DataWriter;
 use XenForo_Model_Ip;
@@ -8,8 +9,7 @@ use Urb\XenforoBridge\Contracts\UserInterface;
 use XenForo_Model_User as XenforoUser;
 use Urb\XenforoBridge\XenforoBridge;
 
-
-class User implements UserInterface
+class User implements UserInterface, Authenticatable
 {
     /**
      * Stores Xenforo User Model
@@ -18,11 +18,16 @@ class User implements UserInterface
      */
     protected $user;
 
+    protected $currentUser;
+
     /**
-     * Construct XenforoBridge User Class
+     * User constructor.
+     *
+     * @param array $currentUser
      */
-    public function __construct()
+    public function __construct(array $currentUser = [])
     {
+        $this->currentUser = is_array($currentUser)? $currentUser : null;
         $this->setUser(new XenforoUser);
     }
 
@@ -166,5 +171,39 @@ class User implements UserInterface
             XenForo_Model::create('XenForo_Model_UserConfirmation')->sendEmailConfirmation($user);
         }*/
         return $user['user_id'];
+    }
+
+
+    public function getAuthIdentifierName()
+    {
+        return 'id';
+    }
+
+    public function getAuthIdentifier()
+    {
+        if(!is_null($this->currentUser))
+        {
+            return $this->currentUser['user_id'];
+        }
+    }
+
+    public function getAuthPassword()
+    {
+        throw new AuthenticationException('get Auth Password not implemented by '.get_class($this));
+    }
+
+    public function getRememberToken()
+    {
+        throw new AuthenticationException('Remember Tokens not implemented by '.get_class($this));
+    }
+
+    public function setRememberToken($value)
+    {
+        throw new AuthenticationException('Remember Tokens not implemented by '.get_class($this));
+    }
+
+    public function getRememberTokenName()
+    {
+        throw new AuthenticationException('Remember Tokens not implemented by '.get_class($this));
     }
 }

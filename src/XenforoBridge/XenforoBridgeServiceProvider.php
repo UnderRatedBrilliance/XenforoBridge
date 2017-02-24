@@ -27,15 +27,21 @@ class XenforoBridgeServiceProvider extends ServiceProvider {
 
             return new XenforoBridge($xenforoDir, $xenforoBaseUrl);
         });
-
-        //Set XenforoBridge Alias
-        $this->app->alias('xenforobridge', XenforoBridge::class);
     }
         
     public function boot()
     {
     	$configPath = __DIR__ .'/../config/xenforobridge.php';
     	$this->publishes([$configPath => config_path('xenforobridge.php')], 'config');
+
+
+    	if(config('xenforobridge.use_xenforo_auth') === true)
+        {
+            Auth::extend('xenforo',function($app, array $config = []) {
+
+                return new XenforoGuard($app->make(XenforoBridge::class));
+            });
+        }
     }
 
 	/**
