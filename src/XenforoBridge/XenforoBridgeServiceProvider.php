@@ -37,7 +37,7 @@ class XenforoBridgeServiceProvider extends ServiceProvider {
 
     	if(config('xenforobridge.use_xenforo_auth') === true)
         {
-            Auth::extend('xenforo',function($app, array $config = []) {
+            \Auth::extend('xenforo',function($app) {
 
                 return new XenforoGuard($app->make(XenforoBridge::class));
             });
