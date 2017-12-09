@@ -27,7 +27,7 @@ To install XenforoBridge into Laravel 5 simple add the following service provide
 
 ```php
 'providers' => array(
-		'XenforoBridge\XenforoBridgeServiceProvider::class',
+		'Urb\XenforoBridge\XenforoBridgeServiceProvider::class',
 )
 
 ```
@@ -58,8 +58,8 @@ Here is an example adding to the routeMiddleware array
 
 ```php
 protected $routeMiddleware = [
-		'xen.auth' => 'XenforoBridge\Middleware\XenAuthMiddleware',
-		'xen.auth.admin' => 'XenforoBridge\Middleware\XenAuthAdminMiddleware',
+		'xen.auth' => 'Urb\XenforoBridge\Middleware\XenAuthMiddleware',
+		'xen.auth.admin' => 'Urb\XenforoBridge\Middleware\XenAuthAdminMiddleware',
 	];
 
 ```
